@@ -7,7 +7,24 @@ vim.o.expandtab = true          -- Convert tabs to spaces
 vim.o.smartindent = true        -- Automatically indent new lines
 vim.o.wrap = false              -- Disable line wrapping
 vim.o.cursorline = true         -- Highlight the current line
-vim.o.clipboard = "unnamedplus" -- allow vim to use system clipboard
+
+local function paste()
+  return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
+end
+vim.g.clipboard = {
+	name = 'OSC 52',
+	copy = {
+		['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+		['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+	},
+	paste = {
+		['+'] = paste,
+		['*'] = paste,
+	},
+}
+-- To ALWAYS use the clipboard for ALL operations
+-- (instead of interacting with the "+" and/or "*" registers explicitly):
+vim.opt.clipboard = "unnamedplus"
 
 -- stop deselection after formatting text
 vim.api.nvim_set_keymap('v', '>', '>gv', { noremap = true })
