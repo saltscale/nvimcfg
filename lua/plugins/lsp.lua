@@ -16,7 +16,6 @@ return {
   },
   config = function()
     local lsp = require("lsp-zero")
-    local lspconfig = require("lspconfig")
     local util = require("lspconfig.util")
 
     require("mason").setup()
@@ -48,7 +47,7 @@ return {
     lsp.setup()
 
 
-    lspconfig.clangd.setup({})
+    vim.lsp.config("clangd", {})
 
     local opts = { noremap = true, silent = true }
     vim.api.nvim_create_autocmd("LspAttach", {
