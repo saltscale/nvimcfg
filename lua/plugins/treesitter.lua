@@ -1,5 +1,7 @@
 return {
   "nvim-treesitter/nvim-treesitter",
+  version = false,
+  build = ":TSUpdate",
   opts = {
     ensure_installed = {
       "bash",
@@ -20,6 +22,7 @@ return {
       "matlab",
       "prisma",
     },
+    auto_install = true,    -- automatically install missing parsers
     highlight = {
       enable = true,
     },
@@ -27,7 +30,5 @@ return {
       enable = true,
     },
   },
-  config = function(_, opts)
-    require("nvim-treesitter.config").setup(opts)
-  end,
 }
+

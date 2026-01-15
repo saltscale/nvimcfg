@@ -1,4 +1,3 @@
--- ~/.config/nvim/lua/plugins/lsp.lua
 return {
   "VonHeikemen/lsp-zero.nvim",
   dependencies = {
@@ -6,21 +5,14 @@ return {
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
     "hrsh7th/nvim-cmp",
-    event        = "InsertEnter",
-    dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "saadparwaiz1/cmp_luasnip",
-      "L3MON4D3/LuaSnip",
-      "rafamadriz/friendly-snippets",
-    },
-    config       = function()
-      local lsp_zero = require("lsp-zero")
-      -- bring in the essential cmp setup
-      lsp_zero.extend_cmp()
-      -- (optional) further `require("cmp").setup{ … }` here
-    end,
+    "hrsh7th/cmp-buffer",
+    "hrsh7th/cmp-path",
+    "saadparwaiz1/cmp_luasnip",
+    "hrsh7th/cmp-nvim-lsp",
+    "L3MON4D3/LuaSnip",
+    "kevinhwang91/nvim-ufo",
+    "rafamadriz/friendly-snippets",
+    { "lukas-reineke/lsp-format.nvim", config = true },
   },
   config = function()
     local lsp = require("lsp-zero")
