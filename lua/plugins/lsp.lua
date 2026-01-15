@@ -12,7 +12,8 @@ return {
     "L3MON4D3/LuaSnip",
     "kevinhwang91/nvim-ufo",
     "rafamadriz/friendly-snippets",
-    { "lukas-reineke/lsp-format.nvim", config = true },
+    -- { "lukas-reineke/lsp-format.nvim", config = true },
+    "lukas-reineke/lsp-format.nvim"
   },
   config = function()
     local lsp = require("lsp-zero")

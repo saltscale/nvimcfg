@@ -1,6 +1,7 @@
 {
   "CopilotChat.nvim": { "branch": "main", "commit": "21bdecb25aa72119d11d7fc08c7e0ce323f1b540" },
   "LuaSnip": { "branch": "master", "commit": "3732756842a2f7e0e76a7b0487e9692072857277" },
+  "PDFview": { "branch": "main", "commit": "972dfcce5c0de578865649940f44bf57a700498d" },
   "citruszest.nvim": { "branch": "main", "commit": "ce6749e4c3a842679cc302ce1c2db76c2d07f700" },
   "cmake-tools.nvim": { "branch": "master", "commit": "f34418d7aa57c730ee91b3e45e7612978506fcf3" },
   "cmp-buffer": { "branch": "main", "commit": "b74fab3656eea9de20a9b8116afa3cfc4ec09657" },
