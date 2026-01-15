@@ -1,20 +1,10 @@
 -- ~/.config/nvim/lua/plugins/lsp.lua
 return {
-  -- 1) lsp-zero core, manual mode:
-  {
-    "VonHeikemen/lsp-zero.nvim",
-    branch = "v3.x",
-    lazy   = true,
-    -- config = false, -- disable auto-setup
-    -- init   = function()
-    --   -- we’ll wire up cmp & lspconfig ourselves
-    --   vim.g.lsp_zero_extend_cmp       = 0
-    --   vim.g.lsp_zero_extend_lspconfig = 0
-    -- end,
-  },
-
-  -- 2) Autocompletion (nvim-cmp):
-  {
+  "VonHeikemen/lsp-zero.nvim",
+  dependencies = {
+    "neovim/nvim-lspconfig",
+    "williamboman/mason.nvim",
+    "williamboman/mason-lspconfig.nvim",
     "hrsh7th/nvim-cmp",
     event        = "InsertEnter",
     dependencies = {
@@ -32,97 +22,58 @@ return {
       -- (optional) further `require("cmp").setup{ … }` here
     end,
   },
+  config = function()
+    local lsp = require("lsp-zero")
+    local util = require("lspconfig.util")
 
-  -- 3) LSP + Mason + clangd override:
-  {
-    "neovim/nvim-lspconfig",
-    event        = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-      { "lukas-reineke/lsp-format.nvim", config = true },
-    },
-    config       = function()
-      local lsp_zero = require("lsp-zero")
+    require("mason").setup()
 
-      -- A) common on_attach: formatting + default keymaps
-      lsp_zero.on_attach(function(client, bufnr)
-        require("lsp-format").on_attach(client, bufnr)
-        lsp_zero.default_keymaps({ buffer = bufnr })
+    require("mason-lspconfig").setup({
+      ensure_installed = {
+        "rust_analyzer",
+        "basedpyright",
+        "jsonls",
+        "tinymist",
+        "ts_ls",
+        "tailwindcss",
+        "lua_ls",
+        "prismals",
+        "clangd",
+      },
+      -- automatic_installation = true,
+      -- automatic_enable = true,
+      -- In v2.x, `handlers` / `setup_handlers` are removed
+      -- mason-lspconfig will automatically enable installed servers via `vim.lsp.enable()`
+    })
 
 
-        -- vim.api.nvim_buf_set_keymap(0,
-        --   "n",
-        --   "ga",
-        --   "<cmd>Lsp codeAction<CR>",
-        --   opts
-        -- )
-        -- hover actions keymap
-        -- vim.api.nvim_buf_set_keymap(0,
-        --   "n",
-        --   "<leader>k",
-        --   "<cmd>Lsp hover actions<CR>",
-        --   opts
-        -- )
-      end)
 
-      -- B) enable the standard lsp-zero wiring
-      lsp_zero.extend_lspconfig()
+    lsp.on_attach(function(client, bufnr)
+      require("lsp-format").on_attach(client, bufnr)
+    end)
 
-      -- C) helper to probe clang++ for libc++ include dirs
-      local function get_clang_include_flags()
-        local null            = vim.fn.has("win32") == 1 and "NUL" or "/dev/null"
-        local cmd             = (
-          "clang++ -std=c++20 -stdlib=libc++ -E -x c++ - -v"
-          .. " < " .. null .. " 2>&1"
-        )
-        local lines           = vim.fn.systemlist(cmd)
-        local flags, in_block = {}, false
-        for _, ln in ipairs(lines) do
-          if ln:match("#include <%.%.%.> search starts here") then
-            in_block = true
-          elseif ln:match("End of search list") then
-            break
-          elseif in_block then
-            local p = vim.trim(ln)
-            if #p > 0 then
-              table.insert(flags, "-I" .. p)
-            end
-          end
+    lsp.setup()
+
+
+    vim.lsp.config("clangd", {})
+
+    local opts = { noremap = true, silent = true }
+    vim.api.nvim_create_autocmd("LspAttach", {
+      group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+      callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if client.server_capabilities.inlayHintProvider then
+          vim.lsp.inlay_hint.enable(true, nil)
         end
-        -- ensure we pick up libc++ itself
-        vim.list_extend(flags, { "-std=c++20", "-stdlib=libc++" })
-        return flags
-      end
 
-      -- D) Mason + Mason-LSPConfig
-      require("mason").setup()
-      require("mason-lspconfig").setup({
-        ensure_installed = {
-          "clangd",
-          "rust_analyzer",
-          "pyright",
-          "jsonls",
-          "lua_ls",
-          "tailwindcss",
-          "prismals",
-          "asm_lsp",
-        },
-        handlers = {
-          -- default handler for all other servers:
-          lsp_zero.default_setup,
-          -- special override for clangd:
-          clangd = function()
-            require("lspconfig").clangd.setup({
-              cmd = { "clangd", "--background-index", "--clang-tidy" },
-              init_options = {
-                fallbackFlags = get_clang_include_flags(),
-              },
-            })
-          end,
-        },
-      })
-    end,
+        vim.api.nvim_buf_set_keymap(0, "n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+        vim.api.nvim_buf_set_keymap(0, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", opts)
 
-  },
+        local filetype = vim.api.nvim_buf_get_option(0, "filetype")
+        if filetype ~= "rust" then
+          vim.api.nvim_buf_set_keymap(0, "n", "ga", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+        end
+      end,
+    })
+  end,
 }
