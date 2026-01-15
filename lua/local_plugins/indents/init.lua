@@ -23,7 +23,7 @@ local defaults = {
 
   -- systems languages (real tabs)
   c          = { tabstop = 2, shiftwidth = 2, softtabstop = 2, expandtab = false },
-  cpp        = { tabstop = 4, shiftwidth = 4, softtabstop = 4, expandtab = false },
+  cpp        = { tabstop = 2, shiftwidth = 2, softtabstop = 2, expandtab = false },
   java       = { tabstop = 4, shiftwidth = 4, softtabstop = 4, expandtab = false },
   go         = { tabstop = 4, shiftwidth = 4, softtabstop = 4, expandtab = false },
   rust       = { tabstop = 4, shiftwidth = 4, softtabstop = 4, expandtab = false },
