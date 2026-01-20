@@ -32,6 +32,7 @@ return {
         "lua_ls",
         "prismals",
         "clangd",
+        "verible",
       },
       -- automatic_installation = true,
       -- automatic_enable = true,
